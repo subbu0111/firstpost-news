@@ -1,0 +1,8 @@
+.env
+__pycache__/
+*.pyc
+notifier.log
+data/
+docs/
+.venv/
+venv/
