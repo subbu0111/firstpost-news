@@ -123,8 +123,6 @@ class SiteGenerator:
             opacity: 0.8;
             margin-top: 50px;
         }}
-        .loading {{ animation: pulse 2s infinite; }}
-        @keyframes pulse {{ 0%, 100% {{ opacity: 1; }} 50% {{ opacity: 0.7; }} }}
         @media (max-width: 768px) {{
             .grid {{ grid-template-columns: 1fr; }}
             h1 {{ font-size: 2em; }}
