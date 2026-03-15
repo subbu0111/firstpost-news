@@ -1,5 +1,4 @@
 import feedparser
-import requests
 from youtube_transcript_api import YouTubeTranscriptApi
 from youtube_transcript_api._errors import TranscriptsDisabled, NoTranscriptFound
 
@@ -7,6 +6,7 @@ class YouTubeFetcher:
     def __init__(self, channel_id):
         self.channel_id = channel_id
         self.rss_url = f"https://www.youtube.com/feeds/videos.xml?channel_id={channel_id}"
+        self.transcript_api = YouTubeTranscriptApi()  # Create instance once
     
     def get_latest_videos(self, max_results=5):
         """Fetch latest videos from YouTube RSS feed"""
@@ -32,12 +32,12 @@ class YouTubeFetcher:
     def get_transcript(self, video_id):
         """Fetch English transcript or first available transcript"""
         try:
-            # Try to get English transcript first
+            # FIX: Use instance method instead of static method
             try:
-                transcript_list = YouTubeTranscriptApi.get_transcript(video_id, languages=['en'])
+                transcript_list = self.transcript_api.get_transcript(video_id, languages=['en'])
             except:
                 # Fallback to any available transcript
-                transcript_list = YouTubeTranscriptApi.get_transcript(video_id)
+                transcript_list = self.transcript_api.get_transcript(video_id)
             
             # Combine all text
             full_text = ' '.join([item['text'] for item in transcript_list])
