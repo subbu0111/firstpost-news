@@ -1,43 +1,51 @@
 import feedparser
-import re
-from typing import List, Dict, Optional
+import requests
 from youtube_transcript_api import YouTubeTranscriptApi
 from youtube_transcript_api._errors import TranscriptsDisabled, NoTranscriptFound
 
 class YouTubeFetcher:
-    def __init__(self, channel_id: str):
+    def __init__(self, channel_id):
+        self.channel_id = channel_id
         self.rss_url = f"https://www.youtube.com/feeds/videos.xml?channel_id={channel_id}"
     
-    def get_recent_videos(self, limit: int = 5) -> List[Dict]:
-        """Fetch recent videos from RSS feed."""
-        feed = feedparser.parse(self.rss_url)
-        videos = []
-        
-        for entry in feed.entries[:limit]:
-            video_id = entry.yt_videoid
-            videos.append({
-                'id': video_id,
-                'title': entry.title,
-                'link': entry.link,
-                'published': entry.published,
-                'thumbnail': f"https://img.youtube.com/vi/{video_id}/maxresdefault.jpg"
-            })
-        
-        return videos
-    
-    def get_transcript(self, video_id: str) -> Optional[str]:
-        """Fetch English transcript using youtube-transcript-api."""
+    def get_latest_videos(self, max_results=5):
+        """Fetch latest videos from YouTube RSS feed"""
         try:
-            transcript_list = YouTubeTranscriptApi.get_transcript(
-                video_id, 
-                languages=['en', 'en-US', 'en-GB']
-            )
-            # Concatenate text entries
-            full_text = " ".join([entry['text'] for entry in transcript_list])
+            feed = feedparser.parse(self.rss_url)
+            videos = []
+            
+            for entry in feed.entries[:max_results]:
+                video_id = entry.yt_videoid
+                videos.append({
+                    'id': video_id,
+                    'title': entry.title,
+                    'url': f"https://www.youtube.com/watch?v={video_id}",
+                    'published': entry.published,
+                    'is_live': 'live' in entry.get('media_status', {}).get('content', '').lower() if hasattr(entry, 'media_status') else False
+                })
+            
+            return videos
+        except Exception as e:
+            print(f"Error fetching RSS: {e}")
+            return []
+    
+    def get_transcript(self, video_id):
+        """Fetch English transcript or first available transcript"""
+        try:
+            # Try to get English transcript first
+            try:
+                transcript_list = YouTubeTranscriptApi.get_transcript(video_id, languages=['en'])
+            except:
+                # Fallback to any available transcript
+                transcript_list = YouTubeTranscriptApi.get_transcript(video_id)
+            
+            # Combine all text
+            full_text = ' '.join([item['text'] for item in transcript_list])
             return full_text
-        except (TranscriptsDisabled, NoTranscriptFound):
-            print(f"⚠️ No transcript available for {video_id}")
+            
+        except (TranscriptsDisabled, NoTranscriptFound) as e:
+            print(f"   Transcript error: {e}")
             return None
         except Exception as e:
-            print(f"❌ Error fetching transcript for {video_id}: {e}")
+            print(f"   Error fetching transcript: {e}")
             return None

@@ -1,253 +1,118 @@
 #!/usr/bin/env python3
-"""Firstpost YouTube Monitor - Main Entry Point"""
-
-import json
 import os
 import sys
-from datetime import datetime
-
-# Add src to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
-
 import pytz
-from config import Config
-from fetcher import YouTubeFetcher
-from summarizer import GeminiSummarizer
-from notifier import TelegramNotifier
-from generator import SiteGenerator
+from datetime import datetime
+from src.config import Config
+from src.fetcher import YouTubeFetcher
+from src.summarizer import GeminiSummarizer
+from src.notifier import TelegramNotifier
+from src.generator import WebsiteGenerator
 
 def is_quiet_hours():
-    """Check if current time is between 12AM-6AM IST (India time)."""
+    """Check if current time is between 12AM-6AM IST"""
     ist = pytz.timezone('Asia/Kolkata')
     now = datetime.now(ist)
-    return 0 <= now.hour < 6  # 12AM to 6AM IST
-
-def is_live_video(title: str) -> bool:
-    """Detect if video is a live broadcast based on title."""
-    title_upper = title.upper()
-    return any(keyword in title_upper for keyword in ['LIVE:', 'LIVE |', '[LIVE]', '(LIVE)', 'LIVE STREAM', 'WATCH LIVE'])
-
-def load_processed_videos(data_file: str) -> set:
-    """Load set of already processed video IDs."""
-    if not os.path.exists(data_file):
-        return set()
-    
-    try:
-        with open(data_file, 'r') as f:
-            data = json.load(f)
-            return {video['id'] for video in data}
-    except:
-        return set()
-
-def save_video(data_file: str, video_data: dict):
-    """Append video to JSON database."""
-    data = []
-    if os.path.exists(data_file):
-        try:
-            with open(data_file, 'r') as f:
-                data = json.load(f)
-        except:
-            pass
-    
-    # Add new video at beginning
-    data.insert(0, video_data)
-    
-    # Keep only last 100 videos to prevent repo bloat
-    data = data[:100]
-    
-    os.makedirs(os.path.dirname(data_file), exist_ok=True)
-    with open(data_file, 'w', encoding='utf-8') as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
+    return 0 <= now.hour < 6
 
 def main():
-    try:
-        Config.validate()
-    except ValueError as e:
-        print(f"❌ Configuration error: {e}")
-        sys.exit(1)
+    print(f"🚀 Starting Firstpost Monitor at {datetime.now(pytz.timezone('Asia/Kolkata')).strftime('%Y-%m-%d %H:%M:%S')} IST")
     
-    print(f"🚀 Starting Firstpost Monitor at {datetime.now()}")
+    # Check quiet hours
+    if is_quiet_hours():
+        print("😴 Quiet hours (12AM-6AM IST). Skipping run.")
+        return
     
     # Initialize components
-    fetcher = YouTubeFetcher(Config.CHANNEL_ID)
-    summarizer = GeminiSummarizer(Config.GEMINI_API_KEY)
-    notifier = TelegramNotifier(Config.TELEGRAM_BOT_TOKEN, Config.TELEGRAM_CHAT_ID)
-    generator = SiteGenerator(Config.DATA_FILE, Config.HTML_FILE)
+    config = Config()
+    fetcher = YouTubeFetcher(config.channel_id)
+    summarizer = GeminiSummarizer(config.gemini_api_key)
+    notifier = TelegramNotifier(config.telegram_bot_token, config.telegram_chat_id)
+    generator = WebsiteGenerator()
     
-    # Load processed videos to avoid duplicates
-    processed = load_processed_videos(Config.DATA_FILE)
-    print(f"📚 Found {len(processed)} previously processed videos")
+    print("📺 Fetching latest videos from Firstpost...")
+    videos = fetcher.get_latest_videos()
     
-    # Fetch recent videos
-    try:
-        videos = fetcher.get_recent_videos(limit=Config.MAX_VIDEOS)
-    except Exception as e:
-        print(f"❌ Failed to fetch RSS: {e}")
-        sys.exit(1)
+    if not videos:
+        print("⚠️ No videos found")
+        return
     
-    new_videos = 0
+    print(f"🎯 Found {len(videos)} videos to process")
     
     for video in videos:
-        if video['id'] in processed:
-            print(f"⏩ Skipping already processed: {video['title'][:50]}...")
+        video_id = video['id']
+        title = video['title']
+        url = video['url']
+        
+        print(f"\n🎬 Processing: {title[:60]}...")
+        
+        # Check if already processed
+        if generator.video_exists(video_id):
+            print(f"   ⏭️ Already processed, skipping")
             continue
         
-        print(f"\n🎬 Processing: {video['title'][:60]}...")
-        
-        # Check if it's a live video first (before fetching transcript)
-        live_status = is_live_video(video['title'])
+        # Handle live streams
+        if video.get('is_live', False):
+            print(f"   🔴 LIVE STREAM detected")
+            message = f"🔴 <b>LIVE NOW</b>\n\n<b>{title}</b>\n\n<a href='{url}'>Watch on YouTube</a>"
+            notifier.send_message(message)
+            generator.save_video({
+                'id': video_id,
+                'title': title,
+                'url': url,
+                'published': video['published'],
+                'status': 'live',
+                'summary': 'Live stream'
+            })
+            continue
         
         # Get transcript
-        transcript = fetcher.get_transcript(video['id'])
+        print(f"   📝 Fetching transcript...")
+        transcript = fetcher.get_transcript(video_id)
         
-        # Handle cases where transcript is not available
         if not transcript:
-            if live_status:
-                # RULE 1: Live video - Send notification without summary
-                print(f"🔴 Live video detected: {video['id']}")
-                
-                message = f"""🔴 <b>LIVE NOW on Firstpost</b>
-
-<b>{video['title']}</b>
-
-⚡ <i>Live broadcast in progress. Summary will be available once stream ends.</i>
-
-<a href="{video['link']}">▶ Watch Live</a>"""
-                
-                notifier.send_notification(message, video['thumbnail'])
-                
-                # Save to database
-                video_record = {
-                    'id': video['id'],
-                    'title': video['title'],
-                    'link': video['link'],
-                    'published': video['published'],
-                    'thumbnail': video['thumbnail'],
-                    'category': 'LIVE',
-                    'summary': 'Live broadcast in progress - transcript not yet available',
-                    'key_points': ['Live stream currently ongoing'],
-                    'processed_at': datetime.now().isoformat()
-                }
-                save_video(Config.DATA_FILE, video_record)
-                new_videos += 1
-                processed.add(video['id'])
-                print(f"✅ Live alert sent for: {video['title'][:50]}...")
-                
-            else:
-                # RULE 2: No transcript available (not live) - Send headline only
-                print(f"⚠️ No transcript for non-live video: {video['id']}")
-                
-                message = f"""📰 <b>Firstpost News Update</b>
-
-<b>{video['title']}</b>
-
-⚠️ <i>Transcript not available for this video. Click below to watch.</i>
-
-<a href="{video['link']}">▶ Watch Video</a>"""
-                
-                notifier.send_notification(message, video['thumbnail'])
-                
-                # Save to database
-                video_record = {
-                    'id': video['id'],
-                    'title': video['title'],
-                    'link': video['link'],
-                    'published': video['published'],
-                    'thumbnail': video['thumbnail'],
-                    'category': 'News',
-                    'summary': 'Transcript not available for this video',
-                    'key_points': ['Video published without captions or transcript disabled'],
-                    'processed_at': datetime.now().isoformat()
-                }
-                save_video(Config.DATA_FILE, video_record)
-                new_videos += 1
-                processed.add(video['id'])
-                print(f"✅ No-transcript alert sent for: {video['title'][:50]}...")
-            
-            continue  # Skip to next video
-        
-        # If we have transcript, proceed with AI summarization (existing logic)
-        summary_raw = summarizer.summarize(transcript, video['title'])
-        
-        if not summary_raw:
-            print(f"⚠️ Failed to generate summary for: {video['id']}")
-            # Fallback: Send basic notification with transcript snippet
-            message = f"""📰 <b>Firstpost News</b>
-
-<b>{video['title']}</b>
-
-<i>Summary generation failed, but transcript is available.</i>
-
-<a href="{video['link']}">▶ Watch Video</a>"""
-            notifier.send_notification(message, video['thumbnail'])
-            
-            video_record = {
-                'id': video['id'],
-                'title': video['title'],
-                'link': video['link'],
+            print(f"   ⚠️ No transcript available")
+            message = f"📝 <b>No Transcript Available</b>\n\n<b>{title}</b>\n\n<a href='{url}'>Watch on YouTube</a>"
+            notifier.send_message(message)
+            generator.save_video({
+                'id': video_id,
+                'title': title,
+                'url': url,
                 'published': video['published'],
-                'thumbnail': video['thumbnail'],
-                'category': 'News',
-                'summary': transcript[:300] + "..." if len(transcript) > 300 else transcript,
-                'key_points': ['AI summary failed - raw transcript available'],
-                'processed_at': datetime.now().isoformat()
-            }
-            save_video(Config.DATA_FILE, video_record)
-            new_videos += 1
-            processed.add(video['id'])
+                'status': 'no_transcript',
+                'summary': 'No transcript available'
+            })
             continue
         
-        # Parse structured summary
-        category = "News"
-        summary_text = summary_raw
-        key_points = []
-        
-        lines = summary_raw.split('\n')
-        for line in lines:
-            if line.startswith('CATEGORY:'):
-                category = line.replace('CATEGORY:', '').strip()
-            elif line.startswith('SUMMARY:'):
-                summary_text = line.replace('SUMMARY:', '').strip()
-            elif line.startswith('•'):
-                key_points.append(line.replace('•', '').strip())
-        
-        # Prepare video record
-        video_record = {
-            'id': video['id'],
-            'title': video['title'],
-            'link': video['link'],
-            'published': video['published'],
-            'thumbnail': video['thumbnail'],
-            'category': category,
-            'summary': summary_text,
-            'key_points': key_points,
-            'processed_at': datetime.now().isoformat()
-        }
-        
-        # Send Telegram notification
-        telegram_msg = summarizer.format_for_telegram(
-            summary_raw, video['title'], video['link']
-        )
-        notifier.send_notification(telegram_msg, video['thumbnail'])
-        
-        # Save to database
-        save_video(Config.DATA_FILE, video_record)
-        new_videos += 1
-        processed.add(video['id'])
-        
-        print(f"✅ AI Summary sent for: {video['title'][:50]}...")
+        # Generate AI summary
+        print(f"   🤖 Generating AI summary...")
+        try:
+            summary = summarizer.summarize(transcript, title)
+            print(f"   ✅ Summary generated ({len(summary)} chars)")
+            
+            # Send Telegram notification
+            message = f"🎥 <b>{title[:200]}</b>\n\n{summary[:800]}\n\n<a href='{url}'>Watch on YouTube</a>"
+            notifier.send_message(message)
+            
+            # Save to data
+            generator.save_video({
+                'id': video_id,
+                'title': title,
+                'url': url,
+                'published': video['published'],
+                'status': 'summarized',
+                'summary': summary
+            })
+            
+        except Exception as e:
+            print(f"   ❌ Error: {e}")
+            message = f"⚠️ <b>Error processing video</b>\n\n<b>{title}</b>\n\n<a href='{url}'>Watch on YouTube</a>"
+            notifier.send_message(message)
     
-    # Regenerate site
-    if new_videos > 0 or not os.path.exists(Config.HTML_FILE):
-        generator.generate_html()
-        print(f"🌐 Site regenerated with {len(processed)} total videos")
+    # Generate website
+    print("\n🌐 Generating website...")
+    generator.generate_html()
+    print("✅ Done!")
     
-    print(f"\n✨ Complete! Processed {new_videos} new videos.")
-
 if __name__ == "__main__":
-    # Quiet hours check: 12AM-6AM IST (no processing)
-    if is_quiet_hours():
-        print("🌙 Quiet hours (12AM-6AM IST). Skipping run.")
-        sys.exit(0)
-    
     main()

@@ -1,32 +1,74 @@
-import json
 import os
+import json
 from datetime import datetime
-from typing import List, Dict
 
-class SiteGenerator:
-    def __init__(self, data_file: str, output_file: str):
+class WebsiteGenerator:
+    def __init__(self, data_file='data/videos.json', output_file='docs/index.html'):
         self.data_file = data_file
         self.output_file = output_file
+        # Ensure data directory exists
+        self._ensure_dir(self.data_file)
     
-    def load_videos(self) -> List[Dict]:
-        """Load videos from JSON database."""
+    def _ensure_dir(self, filepath):
+        """Ensure directory exists for given filepath"""
+        directory = os.path.dirname(filepath)
+        if directory and not os.path.exists(directory):
+            os.makedirs(directory, exist_ok=True)
+            print(f"   📁 Created directory: {directory}")
+    
+    def video_exists(self, video_id):
+        """Check if video already processed"""
+        if not os.path.exists(self.data_file):
+            return False
+        try:
+            with open(self.data_file, 'r', encoding='utf-8') as f:
+                videos = json.load(f)
+            return any(v['id'] == video_id for v in videos)
+        except:
+            return False
+    
+    def save_video(self, video_data):
+        """Save video to JSON database"""
+        self._ensure_dir(self.data_file)
+        
+        videos = []
+        if os.path.exists(self.data_file):
+            try:
+                with open(self.data_file, 'r', encoding='utf-8') as f:
+                    videos = json.load(f)
+            except:
+                videos = []
+        
+        # Update if exists, else append
+        existing = next((i for i, v in enumerate(videos) if v['id'] == video_data['id']), None)
+        if existing is not None:
+            videos[existing] = video_data
+        else:
+            videos.append(video_data)
+        
+        with open(self.data_file, 'w', encoding='utf-8') as f:
+            json.dump(videos, f, indent=2, ensure_ascii=False)
+    
+    def load_videos(self):
+        """Load all videos from JSON"""
+        if not os.path.exists(self.data_file):
+            return []
         try:
             with open(self.data_file, 'r', encoding='utf-8') as f:
                 return json.load(f)
-        except FileNotFoundError:
+        except:
             return []
     
     def generate_html(self):
-        """Generate static HTML page for GitHub Pages."""
-        videos = self.load_videos()
-        
-        # Sort by date (newest first)
-        videos.sort(key=lambda x: x.get('published', ''), reverse=True)
-        
-        # Ensure docs directory exists (CRITICAL FIX)
+        """Generate static HTML page with video summaries"""
+        # CRITICAL FIX: Ensure docs directory exists
         output_dir = os.path.dirname(self.output_file)
-        if output_dir:
+        if output_dir and not os.path.exists(output_dir):
             os.makedirs(output_dir, exist_ok=True)
+            print(f"   📁 Created directory: {output_dir}")
+        
+        videos = self.load_videos()
+        videos.sort(key=lambda x: x.get('published', ''), reverse=True)
         
         html_content = f"""<!DOCTYPE html>
 <html lang="en">
@@ -35,157 +77,154 @@ class SiteGenerator:
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Firstpost News Monitor</title>
     <style>
-        * {{ margin: 0; padding: 0; box-sizing: border-box; }}
-        body {{ 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        body {{
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }}
+        .container {{
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }}
+        h1 {{
             color: #333;
-            line-height: 1.6;
-        }}
-        .container {{ max-width: 1200px; margin: 0 auto; padding: 20px; }}
-        header {{ 
-            text-align: center; 
-            padding: 40px 20px; 
-            color: white;
-            margin-bottom: 30px;
-        }}
-        h1 {{ font-size: 2.5em; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }}
-        .subtitle {{ opacity: 0.9; font-size: 1.1em; }}
-        .stats {{ 
-            background: rgba(255,255,255,0.2); 
-            padding: 15px; 
-            border-radius: 10px; 
-            display: inline-block;
-            margin-top: 20px;
-            backdrop-filter: blur(10px);
-        }}
-        .grid {{ 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); 
-            gap: 25px; 
-        }}
-        .card {{ 
-            background: white; 
-            border-radius: 12px; 
-            overflow: hidden; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            transition: transform 0.3s, box-shadow 0.3s;
-        }}
-        .card:hover {{ transform: translateY(-5px); box-shadow: 0 15px 40px rgba(0,0,0,0.3); }}
-        .thumbnail {{ width: 100%; height: 200px; object-fit: cover; }}
-        .content {{ padding: 20px; }}
-        .category {{ 
-            display: inline-block; 
-            background: #667eea; 
-            color: white; 
-            padding: 4px 12px; 
-            border-radius: 20px; 
-            font-size: 0.75em; 
-            font-weight: bold;
-            text-transform: uppercase;
             margin-bottom: 10px;
+            font-size: 2em;
         }}
-        .category-live {{ background: #ff4757; }}
-        h2 {{ font-size: 1.2em; margin-bottom: 12px; color: #222; line-height: 1.3; }}
-        .summary {{ color: #555; font-size: 0.95em; margin-bottom: 15px; }}
-        .highlights {{ 
-            background: #f8f9fa; 
-            padding: 12px; 
-            border-radius: 8px; 
-            margin-bottom: 15px;
+        .subtitle {{
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.9em;
+        }}
+        .video-card {{
+            background: #f8f9fa;
             border-left: 4px solid #667eea;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            transition: transform 0.2s;
         }}
-        .highlights ul {{ margin-left: 20px; color: #666; font-size: 0.9em; }}
-        .highlights li {{ margin-bottom: 5px; }}
-        .meta {{ 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center;
-            font-size: 0.85em; 
-            color: #888;
-            border-top: 1px solid #eee;
-            padding-top: 15px;
+        .video-card:hover {{
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }}
-        .watch-btn {{ 
-            background: #ff0000; 
-            color: white; 
-            padding: 8px 16px; 
-            border-radius: 6px; 
-            text-decoration: none;
+        .video-title {{
+            font-size: 1.2em;
             font-weight: bold;
-            transition: background 0.3s;
+            margin-bottom: 8px;
         }}
-        .watch-btn:hover {{ background: #cc0000; }}
-        footer {{ 
-            text-align: center; 
-            padding: 40px; 
-            color: white; 
-            opacity: 0.8;
-            margin-top: 50px;
+        .video-title a {{
+            color: #2c3e50;
+            text-decoration: none;
         }}
-        @media (max-width: 768px) {{
-            .grid {{ grid-template-columns: 1fr; }}
-            h1 {{ font-size: 2em; }}
+        .video-title a:hover {{
+            color: #667eea;
+        }}
+        .meta {{
+            color: #666;
+            font-size: 0.85em;
+            margin-bottom: 12px;
+        }}
+        .badge {{
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75em;
+            font-weight: bold;
+            margin-left: 8px;
+        }}
+        .badge-live {{
+            background: #e74c3c;
+            color: white;
+        }}
+        .badge-summary {{
+            background: #27ae60;
+            color: white;
+        }}
+        .badge-no-transcript {{
+            background: #f39c12;
+            color: white;
+        }}
+        .summary {{
+            line-height: 1.6;
+            color: #444;
+            margin-top: 10px;
+        }}
+        .summary ul {{
+            margin: 10px 0;
+            padding-left: 20px;
+        }}
+        .summary li {{
+            margin-bottom: 8px;
+        }}
+        .footer {{
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: #999;
+            font-size: 0.85em;
+            text-align: center;
         }}
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>📺 Firstpost Monitor</h1>
-            <p class="subtitle">AI-summarized news updates from Firstpost YouTube Channel</p>
-            <div class="stats">
-                📊 Total Videos Archived: <strong>{len(videos)}</strong> | 
-                Last Updated: <strong>{datetime.now().strftime('%Y-%m-%d %H:%M UTC')}</strong>
-            </div>
-        </header>
-        
-        <div class="grid">
+        <h1>🎥 Firstpost YouTube Monitor</h1>
+        <p class="subtitle">Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} IST | Auto-refreshes every 20 minutes</p>
 """
         
-        for video in videos[:50]:  # Show last 50 videos max
-            summary = video.get('summary', 'No summary available')
-            category = video.get('category', 'News')
-            is_live = category == 'LIVE'
-            category_class = 'category category-live' if is_live else 'category'
-            
-            # Extract key points for display
-            key_points_html = ""
-            if 'key_points' in video and video['key_points']:
-                points = video['key_points'][:3]
-                key_points_html = "<ul>" + "".join([f"<li>{point}</li>" for point in points]) + "</ul>"
-            
-            html_content += f"""
-            <article class="card">
-                <img src="{video.get('thumbnail', '')}" alt="{video.get('title', '')}" class="thumbnail" loading="lazy">
-                <div class="content">
-                    <span class="{category_class}">{category}</span>
-                    <h2>{video.get('title', 'Untitled')}</h2>
-                    <div class="summary">{summary[:200]}...</div>
-                    <div class="highlights">
-                        <strong>🔑 Key Highlights:</strong>
-                        {key_points_html}
-                    </div>
-                    <div class="meta">
-                        <span>🕐 {video.get('published', 'Unknown date')[:10]}</span>
-                        <a href="{video.get('link', '#')}" class="watch-btn" target="_blank">▶ Watch</a>
-                    </div>
-                </div>
-            </article>
+        if not videos:
+            html_content += """
+        <div class="video-card">
+            <p>No videos processed yet. Check back soon!</p>
+        </div>
+"""
+        else:
+            for video in videos:
+                title = video.get('title', 'Unknown')
+                status = video.get('status', 'unknown')
+                summary = video.get('summary', '')
+                url = video.get('url', '#')
+                published = video.get('published', '')
+                
+                # Format badge based on status
+                if status == 'live':
+                    badge = '<span class="badge badge-live">🔴 LIVE</span>'
+                    content = '<p><em>Live stream was active when detected</em></p>'
+                elif status == 'no_transcript':
+                    badge = '<span class="badge badge-no-transcript">📝 No Transcript</span>'
+                    content = f'<p><a href="{url}" target="_blank">Watch on YouTube</a> — Transcript not available for summarization</p>'
+                else:
+                    badge = '<span class="badge badge-summary">🤖 AI Summary</span>'
+                    # Convert newlines to HTML
+                    formatted_summary = summary.replace('\n', '<br>')
+                    content = f'<div class="summary">{formatted_summary}</div>'
+                
+                html_content += f"""
+        <div class="video-card">
+            <div class="video-title">
+                <a href="{url}" target="_blank">{title}</a>
+                {badge}
+            </div>
+            <div class="meta">Published: {published}</div>
+            {content}
+        </div>
 """
         
         html_content += """
+        <div class="footer">
+            <p>Generated automatically by GitHub Actions | Powered by Gemini AI</p>
         </div>
-        
-        <footer>
-            <p>Powered by AI | Auto-updated every 20 minutes | Built with ❤️ using GitHub Actions</p>
-        </footer>
     </div>
 </body>
-</html>
-"""
+</html>"""
         
         with open(self.output_file, 'w', encoding='utf-8') as f:
             f.write(html_content)
         
-        print(f"✅ Generated site with {len(videos)} videos")
+        print(f"   ✅ Generated website: {self.output_file} ({len(videos)} videos)")

@@ -1,24 +1,16 @@
 import os
-from dotenv import load_dotenv
-
-load_dotenv()
 
 class Config:
-    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-    TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-    TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
-    CHANNEL_ID = os.getenv("CHANNEL_ID", "UC_gUM8rL-Lrg6O3adPW9K1g")
-    MAX_VIDEOS = int(os.getenv("MAX_VIDEOS_PER_RUN", "5"))
+    def __init__(self):
+        self.gemini_api_key = os.getenv('GEMINI_API_KEY')
+        self.telegram_bot_token = os.getenv('TELEGRAM_BOT_TOKEN')
+        self.telegram_chat_id = os.getenv('TELEGRAM_CHAT_ID')
+        self.channel_id = os.getenv('CHANNEL_ID', 'UCrC-7fsdgcz1fwZxW9dCeUw')  # Firstpost default
+        
+        self.validate()
     
-    RSS_URL = f"https://www.youtube.com/feeds/videos.xml?channel_id={CHANNEL_ID}"
-    DATA_FILE = "data/videos.json"
-    HTML_FILE = "docs/index.html"
-    
-    @classmethod
-    def validate(cls):
-        missing = []
-        for attr in ['GEMINI_API_KEY', 'TELEGRAM_BOT_TOKEN', 'TELEGRAM_CHAT_ID']:
-            if not getattr(cls, attr):
-                missing.append(attr)
+    def validate(self):
+        required = ['GEMINI_API_KEY', 'TELEGRAM_BOT_TOKEN', 'TELEGRAM_CHAT_ID']
+        missing = [key for key in required if not os.getenv(key)]
         if missing:
-            raise ValueError(f"Missing env vars: {', '.join(missing)}")
+            raise ValueError(f"Missing environment variables: {', '.join(missing)}")

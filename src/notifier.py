@@ -1,48 +1,31 @@
-import requests
-from typing import Optional
+import asyncio
+from telegram import Bot
 
 class TelegramNotifier:
-    def __init__(self, bot_token: str, chat_id: str):
+    def __init__(self, bot_token, chat_id):
         self.bot_token = bot_token
         self.chat_id = chat_id
-        self.base_url = f"https://api.telegram.org/bot{bot_token}"
+        self.bot = Bot(token=bot_token)
     
-    def send_notification(self, message: str, thumbnail_url: Optional[str] = None) -> bool:
-        """Send message to Telegram with optional image."""
+    def send_message(self, message):
+        """Send message to Telegram"""
         try:
-            if thumbnail_url:
-                # Send photo with caption
-                response = requests.post(
-                    f"{self.base_url}/sendPhoto",
-                    data={
-                        'chat_id': self.chat_id,
-                        'photo': thumbnail_url,
-                        'caption': message,
-                        'parse_mode': 'HTML',
-                        'disable_web_page_preview': False
-                    },
-                    timeout=30
-                )
-            else:
-                # Send text only
-                response = requests.post(
-                    f"{self.base_url}/sendMessage",
-                    data={
-                        'chat_id': self.chat_id,
-                        'text': message,
-                        'parse_mode': 'HTML',
-                        'disable_web_page_preview': False
-                    },
-                    timeout=30
-                )
+            # Truncate if too long (Telegram limit is 4096)
+            if len(message) > 4000:
+                message = message[:3997] + "..."
             
-            if response.status_code == 200:
-                print("✅ Telegram notification sent")
-                return True
-            else:
-                print(f"❌ Telegram API error: {response.text}")
-                return False
-                
+            asyncio.run(self._send_async(message))
+            print(f"   📨 Telegram notification sent")
+            return True
         except Exception as e:
-            print(f"❌ Failed to send Telegram message: {e}")
+            print(f"   ❌ Telegram error: {e}")
             return False
+    
+    async def _send_async(self, message):
+        """Async send method"""
+        await self.bot.send_message(
+            chat_id=self.chat_id,
+            text=message,
+            parse_mode='HTML',
+            disable_web_page_preview=False
+        )
