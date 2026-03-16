@@ -21,7 +21,7 @@ def main():
     # Check quiet hours
     if is_quiet_hours():
         print("😴 Quiet hours (12AM-6AM IST). Skipping run.")
-        return
+        return False 
     
     # Initialize components
     config = Config()
