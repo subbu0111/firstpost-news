@@ -2,8 +2,8 @@ name: Firstpost YouTube Monitor
 
 on:
   schedule:
-    - cron: '*/20 * * * *'  # Every 20 minutes
-  workflow_dispatch:  # Manual trigger
+    - cron: '*/20 * * * *'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -14,19 +14,13 @@ jobs:
     
     steps:
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
     
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.10'
-    
-    - name: Cache pip packages
-      uses: actions/cache@v3
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
+        python-version: '3.11'  # Updated to fix warning
     
     - name: Install dependencies
       run: |
@@ -34,9 +28,7 @@ jobs:
         pip install -r requirements.txt
     
     - name: Create necessary directories
-      run: |
-        mkdir -p data
-        mkdir -p docs
+      run: mkdir -p data docs
     
     - name: Run monitor
       env:
@@ -51,13 +43,25 @@ jobs:
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         
-        # Add files even if ignored (force add)
         git add -f data/videos.json docs/index.html
         
-        # Check if there are changes to commit
-        if git diff --cached --quiet; then
+        if git diff --staged --quiet; then
           echo "No changes to commit"
-        else
-          git commit -m "Update: $(date '+%Y-%m-%d %H:%M:%S') IST"
-          git push
+          exit 0
         fi
+        
+        git commit -m "Update: $(date '+%Y-%m-%d %H:%M:%S') IST"
+        
+        # Try push with retry on conflict
+        for i in 1 2 3; do
+          if git push; then
+            echo "✅ Push successful"
+            exit 0
+          fi
+          echo "⚠️ Push failed, pulling latest..."
+          git pull origin main --rebase --no-edit || git pull origin main --no-edit
+          sleep 2
+        done
+        
+        echo "❌ Failed after retries"
+        exit 1
