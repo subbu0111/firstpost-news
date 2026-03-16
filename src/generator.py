@@ -16,10 +16,11 @@ class WebsiteGenerator:
         if directory and not os.path.exists(directory):
             os.makedirs(directory, exist_ok=True)
     
-    def _format_date_ist(self, date_string):
-        """Convert any date string to IST format"""
+    def _to_ist(self, date_string):
+        """Convert UTC to IST format"""
         try:
             dt = parser.parse(date_string)
+            # Convert to IST
             dt_ist = dt.astimezone(self.ist_tz)
             return dt_ist.strftime('%Y-%m-%d %H:%M IST')
         except:
@@ -70,69 +71,72 @@ class WebsiteGenerator:
         
         videos = self.load_videos()
         videos.sort(key=lambda x: x.get('published', ''), reverse=True)
+        
+        # Current time in IST
         now_ist = datetime.now(self.ist_tz).strftime('%Y-%m-%d %H:%M:%S IST')
         
-        html_content = f"""<!DOCTYPE html>
+        html = f'''<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="300">
     <title>Firstpost News Monitor</title>
     <style>
-        body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }}
-        .container {{ background: white; border-radius: 12px; padding: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }}
-        h1 {{ color: #333; margin-bottom: 10px; font-size: 2em; }}
+        body {{ font-family: Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }}
+        .container {{ background: white; border-radius: 12px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }}
+        h1 {{ color: #333; margin-bottom: 5px; }}
         .subtitle {{ color: #666; margin-bottom: 30px; font-size: 0.9em; }}
-        .video-card {{ background: #f8f9fa; border-left: 4px solid #667eea; padding: 20px; margin-bottom: 20px; border-radius: 8px; transition: transform 0.2s; }}
-        .video-card:hover {{ transform: translateX(5px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }}
+        .video-card {{ background: #f8f9fa; border-left: 4px solid #667eea; padding: 20px; margin-bottom: 20px; border-radius: 8px; }}
         .video-title {{ font-size: 1.2em; font-weight: bold; margin-bottom: 8px; }}
         .video-title a {{ color: #2c3e50; text-decoration: none; }}
         .video-title a:hover {{ color: #667eea; }}
-        .meta {{ color: #666; font-size: 0.85em; margin-bottom: 12px; }}
+        .meta {{ color: #666; font-size: 0.85em; margin-bottom: 10px; }}
         .badge {{ display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 0.75em; font-weight: bold; margin-left: 8px; }}
         .badge-live {{ background: #e74c3c; color: white; }}
         .badge-summary {{ background: #27ae60; color: white; }}
         .badge-no-transcript {{ background: #f39c12; color: white; }}
         .summary {{ line-height: 1.6; color: #444; margin-top: 10px; }}
-        .footer {{ margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; color: #999; font-size: 0.85em; text-align: center; }}
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🎥 Firstpost YouTube Monitor</h1>
-        <p class="subtitle">Last updated: {now_ist} | Auto-refreshes every 20 minutes</p>
-"""
+        <p class="subtitle">Last updated: {now_ist}</p>
+'''
         
         if not videos:
-            html_content += '<div class="video-card"><p>No videos processed yet. Check back soon!</p></div>'
+            html += '<div class="video-card"><p>No videos yet.</p></div>'
         else:
-            for video in videos:
-                title = video.get('title', 'Unknown')
-                status = video.get('status', 'unknown')
-                summary = video.get('summary', '')
-                url = video.get('url', '#')
-                published_ist = self._format_date_ist(video.get('published', ''))
+            for v in videos:
+                title = v.get('title', 'Unknown')
+                status = v.get('status', 'unknown')
+                summary = v.get('summary', '')
+                url = v.get('url', '#')
+                published = self._to_ist(v.get('published', ''))
                 
                 if status == 'live':
                     badge = '<span class="badge badge-live">🔴 LIVE</span>'
-                    content = '<p><em>Live stream was active when detected</em></p>'
+                    content = '<p>Live stream active</p>'
                 elif status == 'no_transcript':
                     badge = '<span class="badge badge-no-transcript">📝 No Transcript</span>'
-                    content = f'<p><a href="{url}" target="_blank">Watch on YouTube</a> — Transcript not available for summarization</p>'
+                    content = '<p>Transcript not available</p>'
                 else:
                     badge = '<span class="badge badge-summary">🤖 AI Summary</span>'
-                    formatted_summary = summary.replace('\n', '<br>')
-                    content = f'<div class="summary">{formatted_summary}</div>'
+                    content = f'<div class="summary">{summary.replace(chr(10), "<br>")}</div>'
                 
-                html_content += f'<div class="video-card"><div class="video-title"><a href="{url}" target="_blank">{title}</a>{badge}</div><div class="meta">Published: {published_ist}</div>{content}</div>'
+                html += f'''
+        <div class="video-card">
+            <div class="video-title"><a href="{url}" target="_blank">{title}</a>{badge}</div>
+            <div class="meta">Published: {published}</div>
+            {content}
+        </div>'''
         
-        html_content += '<div class="footer"><p>Generated automatically by GitHub Actions | Powered by Gemini AI</p></div></div></body></html>'
+        html += '</div></body></html>'
         
         with open(self.output_file, 'w', encoding='utf-8') as f:
-            f.write(html_content)
+            f.write(html)
         
-        print(f"   ✅ Generated website: {self.output_file} ({len(videos)} videos)")
+        print(f"   ✅ Generated: {self.output_file} ({len(videos)} videos)")
 
 if __name__ == "__main__":
     gen = WebsiteGenerator()
