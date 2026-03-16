@@ -17,10 +17,9 @@ class WebsiteGenerator:
             os.makedirs(directory, exist_ok=True)
     
     def _to_ist(self, date_string):
-        """Convert UTC to IST format"""
+        """Convert UTC to IST"""
         try:
             dt = parser.parse(date_string)
-            # Convert to IST
             dt_ist = dt.astimezone(self.ist_tz)
             return dt_ist.strftime('%Y-%m-%d %H:%M IST')
         except:
@@ -72,7 +71,6 @@ class WebsiteGenerator:
         videos = self.load_videos()
         videos.sort(key=lambda x: x.get('published', ''), reverse=True)
         
-        # Current time in IST
         now_ist = datetime.now(self.ist_tz).strftime('%Y-%m-%d %H:%M:%S IST')
         
         html = f'''<!DOCTYPE html>
@@ -82,7 +80,7 @@ class WebsiteGenerator:
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Firstpost News Monitor</title>
     <style>
-        body {{ font-family: Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }}
+        body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }}
         .container {{ background: white; border-radius: 12px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }}
         h1 {{ color: #333; margin-bottom: 5px; }}
         .subtitle {{ color: #666; margin-bottom: 30px; font-size: 0.9em; }}
@@ -96,16 +94,17 @@ class WebsiteGenerator:
         .badge-summary {{ background: #27ae60; color: white; }}
         .badge-no-transcript {{ background: #f39c12; color: white; }}
         .summary {{ line-height: 1.6; color: #444; margin-top: 10px; }}
+        .footer {{ margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; color: #999; font-size: 0.85em; text-align: center; }}
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🎥 Firstpost YouTube Monitor</h1>
-        <p class="subtitle">Last updated: {now_ist}</p>
+        <p class="subtitle">Last updated: {now_ist} | Runs every 20 minutes</p>
 '''
         
         if not videos:
-            html += '<div class="video-card"><p>No videos yet.</p></div>'
+            html += '<div class="video-card"><p>No videos processed yet.</p></div>'
         else:
             for v in videos:
                 title = v.get('title', 'Unknown')
@@ -116,13 +115,14 @@ class WebsiteGenerator:
                 
                 if status == 'live':
                     badge = '<span class="badge badge-live">🔴 LIVE</span>'
-                    content = '<p>Live stream active</p>'
+                    content = '<p>Live stream active when detected</p>'
                 elif status == 'no_transcript':
                     badge = '<span class="badge badge-no-transcript">📝 No Transcript</span>'
-                    content = '<p>Transcript not available</p>'
+                    content = f'<p><a href="{url}" target="_blank">Watch on YouTube</a> — Transcript not available</p>'
                 else:
                     badge = '<span class="badge badge-summary">🤖 AI Summary</span>'
-                    content = f'<div class="summary">{summary.replace(chr(10), "<br>")}</div>'
+                    formatted = summary.replace('\n', '<br>')
+                    content = f'<div class="summary">{formatted}</div>'
                 
                 html += f'''
         <div class="video-card">
@@ -131,12 +131,18 @@ class WebsiteGenerator:
             {content}
         </div>'''
         
-        html += '</div></body></html>'
+        html += '''
+        <div class="footer">
+            <p>Generated automatically by GitHub Actions | Powered by Gemini AI</p>
+        </div>
+    </div>
+</body>
+</html>'''
         
         with open(self.output_file, 'w', encoding='utf-8') as f:
             f.write(html)
         
-        print(f"   ✅ Generated: {self.output_file} ({len(videos)} videos)")
+        print(f"   ✅ Generated website: {self.output_file} ({len(videos)} videos)")
 
 if __name__ == "__main__":
     gen = WebsiteGenerator()

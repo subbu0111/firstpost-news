@@ -9,21 +9,9 @@ from src.summarizer import GeminiSummarizer
 from src.notifier import TelegramNotifier
 from src.generator import WebsiteGenerator
 
-def is_quiet_hours():
-    """Check if current time is between 12AM-6AM IST"""
-    ist = pytz.timezone('Asia/Kolkata')
-    now = datetime.now(ist)
-    return 0 <= now.hour < 6
-
 def main():
     print(f"🚀 Starting Firstpost Monitor at {datetime.now(pytz.timezone('Asia/Kolkata')).strftime('%Y-%m-%d %H:%M:%S')} IST")
     
-    # Check quiet hours
-    if is_quiet_hours():
-        print("😴 Quiet hours (12AM-6AM IST). Skipping run.")
-        return False 
-    
-    # Initialize components
     config = Config()
     fetcher = YouTubeFetcher(config.channel_id)
     summarizer = GeminiSummarizer(config.gemini_api_key)
@@ -46,12 +34,10 @@ def main():
         
         print(f"\n🎬 Processing: {title[:60]}...")
         
-        # Check if already processed
         if generator.video_exists(video_id):
             print(f"   ⏭️ Already processed, skipping")
             continue
         
-        # Handle live streams
         if video.get('is_live', False):
             print(f"   🔴 LIVE STREAM detected")
             message = f"🔴 <b>LIVE NOW</b>\n\n<b>{title}</b>\n\n<a href='{url}'>Watch on YouTube</a>"
@@ -66,7 +52,6 @@ def main():
             })
             continue
         
-        # Get transcript
         print(f"   📝 Fetching transcript...")
         transcript = fetcher.get_transcript(video_id)
         
@@ -84,17 +69,14 @@ def main():
             })
             continue
         
-        # Generate AI summary
         print(f"   🤖 Generating AI summary...")
         try:
             summary = summarizer.summarize(transcript, title)
             print(f"   ✅ Summary generated ({len(summary)} chars)")
             
-            # Send Telegram notification
             message = f"🎥 <b>{title[:200]}</b>\n\n{summary[:800]}\n\n<a href='{url}'>Watch on YouTube</a>"
             notifier.send_message(message)
             
-            # Save to data
             generator.save_video({
                 'id': video_id,
                 'title': title,
@@ -109,7 +91,6 @@ def main():
             message = f"⚠️ <b>Error processing video</b>\n\n<b>{title}</b>\n\n<a href='{url}'>Watch on YouTube</a>"
             notifier.send_message(message)
     
-    # Generate website
     print("\n🌐 Generating website...")
     generator.generate_html()
     print("✅ Done!")

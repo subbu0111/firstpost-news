@@ -1,5 +1,6 @@
 import feedparser
 from youtube_transcript_api import YouTubeTranscriptApi
+from youtube_transcript_api._errors import TranscriptsDisabled, NoTranscriptFound
 
 class YouTubeFetcher:
     def __init__(self, channel_id):
@@ -26,40 +27,44 @@ class YouTubeFetcher:
             return []
     
     def get_transcript(self, video_id):
-        """Universal method - tries multiple API versions"""
+        """Fetch transcript - tries multiple methods"""
         try:
-            # Method 1: Try the newer fetch() method (v1.0+)
-            try:
-                ytt = YouTubeTranscriptApi()
-                transcript = ytt.fetch(video_id)
-                # Handle new response format
-                if transcript:
-                    texts = []
-                    for snippet in transcript:
-                        if hasattr(snippet, 'text'):
-                            texts.append(snippet.text)
-                        elif isinstance(snippet, dict):
-                            texts.append(snippet.get('text', ''))
-                    full_text = ' '.join(texts)
-                    if full_text:
-                        print(f"   ✅ Transcript fetched (v1.0 API): {len(full_text)} chars")
-                        return full_text
-            except (AttributeError, TypeError):
-                pass  # Fall through to old method
-            
-            # Method 2: Try old static method (v0.6.x)
+            # Try static method first (v0.6.x)
             try:
                 transcript_list = YouTubeTranscriptApi.get_transcript(video_id)
                 if transcript_list:
                     full_text = ' '.join([item['text'] for item in transcript_list])
-                    print(f"   ✅ Transcript fetched (v0.6 API): {len(full_text)} chars")
+                    print(f"   ✅ Transcript fetched: {len(full_text)} chars")
                     return full_text
             except AttributeError:
                 pass
             
-            print("   ⚠️ Could not fetch transcript with any method")
+            # Try instance method (v1.0+)
+            try:
+                ytt = YouTubeTranscriptApi()
+                transcript = ytt.fetch(video_id)
+                texts = []
+                for snippet in transcript:
+                    if hasattr(snippet, 'text'):
+                        texts.append(snippet.text)
+                    elif isinstance(snippet, dict):
+                        texts.append(snippet.get('text', ''))
+                full_text = ' '.join(texts)
+                if full_text:
+                    print(f"   ✅ Transcript fetched: {len(full_text)} chars")
+                    return full_text
+            except:
+                pass
+            
+            print("   ⚠️ Could not fetch transcript")
             return None
             
+        except TranscriptsDisabled:
+            print("   ⚠️ Transcripts disabled")
+            return None
+        except NoTranscriptFound:
+            print("   ⚠️ No transcript found")
+            return None
         except Exception as e:
-            print(f"   ⚠️ Transcript unavailable: {str(e)[:80]}")
+            print(f"   ❌ Error: {str(e)[:100]}")
             return None

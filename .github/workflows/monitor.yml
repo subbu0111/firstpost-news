@@ -20,14 +20,14 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.11'  # Updated to fix warning
+        python-version: '3.11'
     
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
     
-    - name: Create necessary directories
+    - name: Create directories
       run: mkdir -p data docs
     
     - name: Run monitor
@@ -52,16 +52,16 @@ jobs:
         
         git commit -m "Update: $(date '+%Y-%m-%d %H:%M:%S') IST"
         
-        # Try push with retry on conflict
+        # Push with retry on conflict
         for i in 1 2 3; do
           if git push; then
             echo "✅ Push successful"
             exit 0
           fi
-          echo "⚠️ Push failed, pulling latest..."
+          echo "⚠️ Conflict detected, pulling latest..."
           git pull origin main --rebase --no-edit || git pull origin main --no-edit
           sleep 2
         done
         
-        echo "❌ Failed after retries"
+        echo "❌ Push failed after retries"
         exit 1
