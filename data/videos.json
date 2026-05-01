@@ -26638,5 +26638,69 @@
     "published": "2026-05-01T15:19:45+00:00",
     "status": "no_transcript",
     "summary": "No transcript available"
+  },
+  {
+    "id": "41Cera0tKGs",
+    "title": "TRUMP'S NATO WAR LIVE: US President Threatens to Withdraw Troops from Allies | Vantage on Firstpost",
+    "url": "https://www.youtube.com/watch?v=41Cera0tKGs",
+    "published": "2026-05-01T17:03:17+00:00",
+    "status": "no_transcript",
+    "summary": "No transcript available"
+  },
+  {
+    "id": "Zp9MSpTzCkA",
+    "title": "US vs Iran LIVE: US Says Iran War Terminated; Tehran Mocks Trump’s Blockade | Vantage on Firstpost",
+    "url": "https://www.youtube.com/watch?v=Zp9MSpTzCkA",
+    "published": "2026-05-01T16:57:04+00:00",
+    "status": "no_transcript",
+    "summary": "No transcript available"
+  },
+  {
+    "id": "wC4TzYzTfvk",
+    "title": "US Iran Conflict LIVE: Is Iran Digging out Hidden Missiles and Munitions During Ceasefire?",
+    "url": "https://www.youtube.com/watch?v=wC4TzYzTfvk",
+    "published": "2026-05-01T16:24:10+00:00",
+    "status": "no_transcript",
+    "summary": "No transcript available"
+  },
+  {
+    "id": "wtxGv39Rdmw",
+    "title": "Trump LIVE: US President Says 'UNHAPPY WITH EU NATIONS' | Hints Renewed Strikes on Iran",
+    "url": "https://www.youtube.com/watch?v=wtxGv39Rdmw",
+    "published": "2026-05-01T16:31:00+00:00",
+    "status": "no_transcript",
+    "summary": "No transcript available"
+  },
+  {
+    "id": "tK3sVD-LzKI",
+    "title": "China Warns US Over Taiwan Ahead of Trump, Xi Summit | Vantage on Firstpost | 4K",
+    "url": "https://www.youtube.com/watch?v=tK3sVD-LzKI",
+    "published": "2026-05-01T17:15:04+00:00",
+    "status": "no_transcript",
+    "summary": "No transcript available"
+  },
+  {
+    "id": "c-Cohbyt5B4",
+    "title": "Trump's War on NATO: US President Threatens to Withdraw Troops from Allies |Vantage on Firstpost |4K",
+    "url": "https://www.youtube.com/watch?v=c-Cohbyt5B4",
+    "published": "2026-05-01T16:58:00+00:00",
+    "status": "no_transcript",
+    "summary": "No transcript available"
+  },
+  {
+    "id": "uhWVrCL28gk",
+    "title": "Iran Shows Off Arash-2 Drone Amid US Deadlock, Claims of Rearming | Vantage on Firstpost  |4K",
+    "url": "https://www.youtube.com/watch?v=uhWVrCL28gk",
+    "published": "2026-05-01T16:55:01+00:00",
+    "status": "no_transcript",
+    "summary": "No transcript available"
+  },
+  {
+    "id": "shu62UtEdZo",
+    "title": "US Says Iran War Terminated; Tehran Mocks Trump’s Blockade | Vantage on Firstpost | 4K",
+    "url": "https://www.youtube.com/watch?v=shu62UtEdZo",
+    "published": "2026-05-01T16:45:07+00:00",
+    "status": "summarized",
+    "summary": "Error generating summary: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}"
   }
 ]
