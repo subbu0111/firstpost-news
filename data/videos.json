@@ -87382,5 +87382,77 @@
     "published": "2026-09-03T10:35:21+00:00",
     "status": "summarized",
     "summary": "Error generating summary: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}"
+  },
+  {
+    "id": "8ieQcDKu7Mk",
+    "title": "LIVE: India Unleashes Khagantak Glide Bomb That Can Strike Deep in Pakistan | Vantage on Firstpost",
+    "url": "https://www.youtube.com/watch?v=8ieQcDKu7Mk",
+    "published": "2026-09-03T03:11:44+00:00",
+    "status": "no_transcript",
+    "summary": "No transcript available"
+  },
+  {
+    "id": "Uri1Yuz2t4Y",
+    "title": "US Iran War LIVE: Trump Considers Ending Iran War; Pentagon Extends Troop Deployment | Vantage",
+    "url": "https://www.youtube.com/watch?v=Uri1Yuz2t4Y",
+    "published": "2026-09-03T03:08:34+00:00",
+    "status": "no_transcript",
+    "summary": "No transcript available"
+  },
+  {
+    "id": "6xASKBdE4hQ",
+    "title": "US IRAN WAR LIVE: ‘Strait of Trump’? Donald Trump’s Shock Move Amid Iran War",
+    "url": "https://www.youtube.com/watch?v=6xASKBdE4hQ",
+    "published": "2026-09-03T13:49:24+00:00",
+    "status": "no_transcript",
+    "summary": "No transcript available"
+  },
+  {
+    "id": "ZIrX4LaI_Nc",
+    "title": "Trump Takes Swipe at Harry, Meghan After UK Return: 'Terribly Disrespectful' | Firstpost America",
+    "url": "https://www.youtube.com/watch?v=ZIrX4LaI_Nc",
+    "published": "2026-09-03T16:05:44+00:00",
+    "status": "no_transcript",
+    "summary": "No transcript available"
+  },
+  {
+    "id": "QWhQzZVBZog",
+    "title": "Jaishankar's Unapologetic Reply on Russian Oil Trade in Ukraine | N18 G",
+    "url": "https://www.youtube.com/watch?v=QWhQzZVBZog",
+    "published": "2026-09-03T16:04:37+00:00",
+    "status": "no_transcript",
+    "summary": "No transcript available"
+  },
+  {
+    "id": "WII6msZgbpo",
+    "title": "Trump's Corruption Crisis? 89% of Americans Say Govt Is Corrupt | Firstpost America | N18G",
+    "url": "https://www.youtube.com/watch?v=WII6msZgbpo",
+    "published": "2026-09-03T15:50:22+00:00",
+    "status": "no_transcript",
+    "summary": "No transcript available"
+  },
+  {
+    "id": "wBkKPJFZ47k",
+    "title": "LIVE: Hakeem Jeffries Briefs Press On Democratic Agenda, 2026 Midterms",
+    "url": "https://www.youtube.com/watch?v=wBkKPJFZ47k",
+    "published": "2026-09-03T15:04:28+00:00",
+    "status": "no_transcript",
+    "summary": "No transcript available"
+  },
+  {
+    "id": "r60qpqi2sMc",
+    "title": "Putin's Chilling Threat: Russia Winning Ukraine War, No Talks With 'Terrorists' | Firstpost America",
+    "url": "https://www.youtube.com/watch?v=r60qpqi2sMc",
+    "published": "2026-09-03T15:40:18+00:00",
+    "status": "no_transcript",
+    "summary": "No transcript available"
+  },
+  {
+    "id": "okB8XKub7dI",
+    "title": "US Spy Aircraft Erupts into Flames ON CAM; Iran Flaunts Air-to-Surface Missile | Firstpost America",
+    "url": "https://www.youtube.com/watch?v=okB8XKub7dI",
+    "published": "2026-09-03T15:30:35+00:00",
+    "status": "no_transcript",
+    "summary": "No transcript available"
   }
 ]
