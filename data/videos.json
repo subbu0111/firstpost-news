@@ -87302,5 +87302,85 @@
     "published": "2026-09-02T23:32:56+00:00",
     "status": "no_transcript",
     "summary": "No transcript available"
+  },
+  {
+    "id": "ZaomQc8jH0c",
+    "title": "IRAN WAR LIVE: 'You Will See Soon' Tehran Issues Chilling Warning to US | Iran's New Strategy",
+    "url": "https://www.youtube.com/watch?v=ZaomQc8jH0c",
+    "published": "2026-09-03T09:52:43+00:00",
+    "status": "no_transcript",
+    "summary": "No transcript available"
+  },
+  {
+    "id": "PQ2vELWbswo",
+    "title": "US Iran War LIVE: Trump Claims US has 'Total Control' of Hormuz | Threatens Renewed Attacks on Iran",
+    "url": "https://www.youtube.com/watch?v=PQ2vELWbswo",
+    "published": "2026-09-03T09:06:25+00:00",
+    "status": "no_transcript",
+    "summary": "No transcript available"
+  },
+  {
+    "id": "rsPq6Hjp4Ok",
+    "title": "LIVE: Putin To Hit Germany? 'Direct Strike...': After London, Berlin On 'Alert' | Firstpost",
+    "url": "https://www.youtube.com/watch?v=rsPq6Hjp4Ok",
+    "published": "2026-09-03T03:27:25+00:00",
+    "status": "no_transcript",
+    "summary": "No transcript available"
+  },
+  {
+    "id": "LqEgIfack8M",
+    "title": "5.0-Magnitude Earthquake Strikes Tibet Days After Nepal Glacier Disaster | EARTHQUAKE LIVE",
+    "url": "https://www.youtube.com/watch?v=LqEgIfack8M",
+    "published": "2026-09-03T11:32:06+00:00",
+    "status": "no_transcript",
+    "summary": "No transcript available"
+  },
+  {
+    "id": "Yu3xnQtVzdE",
+    "title": "Jordan Admits Iran Op Success? 'Give Up Top Army Post': Shake-Up After US Base Hit | Firstpost Live",
+    "url": "https://www.youtube.com/watch?v=Yu3xnQtVzdE",
+    "published": "2026-09-03T11:30:16+00:00",
+    "status": "summarized",
+    "summary": "Error generating summary: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}"
+  },
+  {
+    "id": "M4G9Km_F-U0",
+    "title": "Huge Tsunami-Like Storm Batters Canada; Thousands Hit | Firstpost Live",
+    "url": "https://www.youtube.com/watch?v=M4G9Km_F-U0",
+    "published": "2026-09-03T11:18:29+00:00",
+    "status": "summarized",
+    "summary": "Error generating summary: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}"
+  },
+  {
+    "id": "YM7TN65rseM",
+    "title": "Russia's Direct Strike On Berlin Any Moment? NATO On 'Alert' After Putin's Threat | Firstpost Live",
+    "url": "https://www.youtube.com/watch?v=YM7TN65rseM",
+    "published": "2026-09-03T11:17:57+00:00",
+    "status": "summarized",
+    "summary": "Error generating summary: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}"
+  },
+  {
+    "id": "hTtJQoNbtqw",
+    "title": "'Never Been Afraid Of Criticism' Says PCB Chief Mohsin Naqvi | First Sports With Rupha Ramani",
+    "url": "https://www.youtube.com/watch?v=hTtJQoNbtqw",
+    "published": "2026-09-03T10:45:04+00:00",
+    "status": "summarized",
+    "summary": "Error generating summary: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}"
+  },
+  {
+    "id": "F9QMZ486KFc",
+    "title": "Are African Footballers Still Treated Like Commodities? | First Sports With Rupha Ramani | 4K",
+    "url": "https://www.youtube.com/watch?v=F9QMZ486KFc",
+    "published": "2026-09-03T10:40:15+00:00",
+    "status": "no_transcript",
+    "summary": "No transcript available"
+  },
+  {
+    "id": "WE1XUxgXQp8",
+    "title": "Arab Nation's Knee-Jerk Military Action After Failing To Block Iran Attacks; Army Chief Shunted",
+    "url": "https://www.youtube.com/watch?v=WE1XUxgXQp8",
+    "published": "2026-09-03T10:35:21+00:00",
+    "status": "summarized",
+    "summary": "Error generating summary: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}"
   }
 ]
