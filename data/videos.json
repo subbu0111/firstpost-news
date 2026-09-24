@@ -94390,5 +94390,69 @@
     "published": "2026-09-24T18:14:41+00:00",
     "status": "no_transcript",
     "summary": "No transcript available"
+  },
+  {
+    "id": "bCxwLbh12bU",
+    "title": "Trump-Xi LIVE At White House; Grand Pomp & Show As US President Goes All Out For China",
+    "url": "https://www.youtube.com/watch?v=bCxwLbh12bU",
+    "published": "2026-09-24T21:34:18+00:00",
+    "status": "no_transcript",
+    "summary": "No transcript available"
+  },
+  {
+    "id": "HKcRuQCHKSU",
+    "title": "Netanyahu Defends Israel, Takes Shot at Al-Sharaa as Delegates Walk Out | N18G",
+    "url": "https://www.youtube.com/watch?v=HKcRuQCHKSU",
+    "published": "2026-09-24T22:26:18+00:00",
+    "status": "no_transcript",
+    "summary": "No transcript available"
+  },
+  {
+    "id": "e1eKwZvaNcI",
+    "title": "Trump's Lavish Welcome for Xi Jinping | N18G",
+    "url": "https://www.youtube.com/watch?v=e1eKwZvaNcI",
+    "published": "2026-09-24T22:22:58+00:00",
+    "status": "no_transcript",
+    "summary": "No transcript available"
+  },
+  {
+    "id": "dxjS3f93R5k",
+    "title": "Iran's Pezeshkian Slams Western Policy in Talks With EU's Costa | N18G",
+    "url": "https://www.youtube.com/watch?v=dxjS3f93R5k",
+    "published": "2026-09-24T22:21:08+00:00",
+    "status": "no_transcript",
+    "summary": "No transcript available"
+  },
+  {
+    "id": "QkK73tJ3R9I",
+    "title": "'Take It Down' Protesters Clash Over Ukrainian Flag Outside Sofia City Hall | N18G",
+    "url": "https://www.youtube.com/watch?v=QkK73tJ3R9I",
+    "published": "2026-09-24T22:19:31+00:00",
+    "status": "no_transcript",
+    "summary": "No transcript available"
+  },
+  {
+    "id": "pkaDy6pbGoc",
+    "title": "Trump Calls Ties With Xi a ‘Truly Great Friendship’ at White House | N18G",
+    "url": "https://www.youtube.com/watch?v=pkaDy6pbGoc",
+    "published": "2026-09-24T22:17:54+00:00",
+    "status": "summarized",
+    "summary": "Error generating summary: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}"
+  },
+  {
+    "id": "bghpl8Cd3hg",
+    "title": "Putin Chairs Security Council Meet on Measures to Counter Threats | N18G",
+    "url": "https://www.youtube.com/watch?v=bghpl8Cd3hg",
+    "published": "2026-09-24T22:16:27+00:00",
+    "status": "no_transcript",
+    "summary": "No transcript available"
+  },
+  {
+    "id": "orVW513GpZo",
+    "title": "Netanyahu Calls Zohran Mamdani NYC Mayor 'Anti-Semitic' at The UN General Assembly",
+    "url": "https://www.youtube.com/watch?v=orVW513GpZo",
+    "published": "2026-09-24T22:00:26+00:00",
+    "status": "no_transcript",
+    "summary": "No transcript available"
   }
 ]
