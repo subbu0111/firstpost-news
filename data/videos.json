@@ -98758,5 +98758,77 @@
     "published": "2026-10-12T22:22:01+00:00",
     "status": "no_transcript",
     "summary": "No transcript available"
+  },
+  {
+    "id": "cJMDAWZXq3I",
+    "title": "LIVE: Can Merz Rescue German Industry? Economic Strains Mount In Berlin",
+    "url": "https://www.youtube.com/watch?v=cJMDAWZXq3I",
+    "published": "2026-10-13T08:50:08+00:00",
+    "status": "no_transcript",
+    "summary": "No transcript available"
+  },
+  {
+    "id": "0q4lP45AAZ0",
+    "title": "LIVE: France Protests Rage As Students Block School Campuses, Say 'We Are Not Demanding Luxury'",
+    "url": "https://www.youtube.com/watch?v=0q4lP45AAZ0",
+    "published": "2026-10-13T06:26:29+00:00",
+    "status": "no_transcript",
+    "summary": "No transcript available"
+  },
+  {
+    "id": "_eZ1kvx0oRQ",
+    "title": "LIVE: Iran 'Attacks' 6 Ships In 24 Hours As Gulf Of Oman Shipping Risks Rise | Firstpost Live",
+    "url": "https://www.youtube.com/watch?v=_eZ1kvx0oRQ",
+    "published": "2026-10-13T02:22:54+00:00",
+    "status": "no_transcript",
+    "summary": "No transcript available"
+  },
+  {
+    "id": "FXRfN-pcLq0",
+    "title": "Firefighters Battle Blaze at Paris’ Oldest Covered Food Market",
+    "url": "https://www.youtube.com/watch?v=FXRfN-pcLq0",
+    "published": "2026-10-13T08:53:10+00:00",
+    "status": "no_transcript",
+    "summary": "No transcript available"
+  },
+  {
+    "id": "k6MsKer7lsY",
+    "title": "LIVE: Ronaldo Scores, Kisses Saudi Flag After Missile Alert Delays Al-Nassr Match | First Sports",
+    "url": "https://www.youtube.com/watch?v=k6MsKer7lsY",
+    "published": "2026-10-13T08:38:35+00:00",
+    "status": "no_transcript",
+    "summary": "No transcript available"
+  },
+  {
+    "id": "7Ycf3UCPYoc",
+    "title": "Dramatic Video: Houthis Blow Up Saudi Tanks, Yemen Claims 950 Killed in 1870+ Ops| Firstpost Live|4K",
+    "url": "https://www.youtube.com/watch?v=7Ycf3UCPYoc",
+    "published": "2026-10-13T08:29:37+00:00",
+    "status": "no_transcript",
+    "summary": "No transcript available"
+  },
+  {
+    "id": "6O-ObwrtT78",
+    "title": "Trump Targets Ilhan Omar at Ohio Rally After FBI Raid on Her Home",
+    "url": "https://www.youtube.com/watch?v=6O-ObwrtT78",
+    "published": "2026-10-13T08:15:46+00:00",
+    "status": "summarized",
+    "summary": "Error generating summary: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}"
+  },
+  {
+    "id": "cPnRirMQEQ8",
+    "title": "'Not 1, But 6': Iran’s 'Biggest' Hormuz Attack as Anti-Ship Missiles Unleashed | Firstpost Live",
+    "url": "https://www.youtube.com/watch?v=cPnRirMQEQ8",
+    "published": "2026-10-13T08:11:58+00:00",
+    "status": "no_transcript",
+    "summary": "No transcript available"
+  },
+  {
+    "id": "d_9k4JU07KI",
+    "title": "Watch: CJP Leaders Force Their Way Into 'Denotified' Jantar Mantar, Detained | Firstpost Live | 4K",
+    "url": "https://www.youtube.com/watch?v=d_9k4JU07KI",
+    "published": "2026-10-13T07:50:18+00:00",
+    "status": "no_transcript",
+    "summary": "No transcript available"
   }
 ]
